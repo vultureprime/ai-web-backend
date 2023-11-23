@@ -26,8 +26,6 @@ openai.api_key = os.environ['openai_api_key']
 
 def get_session(uuid):
     if r.get(uuid) is None:
-        print(uuid)
-        print(r.get(uuid))
         raise HTTPException(status_code=404, detail="session not found")
 def create_session(uuid):
     message = []
@@ -50,7 +48,7 @@ def stream_chat(uuid:str,prompt: str):
     result = ""
     messages = add_message(uuid,'user',prompt)
     for chunk in openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4",
         messages=messages,
         stream=True,
     ):

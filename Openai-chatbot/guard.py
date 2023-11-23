@@ -59,28 +59,6 @@ def generate_response(res):
     for i in res:
         yield i
     
-# prompt = 'Thai rice'
-# add_rule('developer')
-# add_rule('java')
-# add_rule('python')
-# add_rule('sql')
-# add_rule('database')
-# get_collection()
-# score = compare_similarity(prompt)
-# clear_db_collection()
-# if score > 0.7:
-#     messages = [{"role": 'user', "content": prompt}]
-#     result = ""
-#     for chunk in openai.ChatCompletion.create(
-#         model="gpt-3.5-turbo",
-#         messages=messages,
-#         stream=True,
-#     ):
-#         content = chunk["choices"][0].get("delta", {}).get("content")
-#         if content is not None:
-#             result = result + content
-#     print(result)
-# else: print('bad prompt')
 @app.post('/create_rule')
 def create_rule(rule:Rule):
     add_rule(rule.rule)
@@ -118,7 +96,6 @@ async def main(uuid:str,message:str):
                 )
     else:
         score = compare_similarity(message)
-        print(score)
         if score > 0.7:
             return StreamingResponse(
                         stream_chat(

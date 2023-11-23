@@ -1,6 +1,5 @@
 ## AI Web Interface
 This resource serves as a comprehensive compilation of backend used for creating AI-powered websites. 
-.com/vultureprime/deploy-ai-model)
 
 ## Repo
 

@@ -15,19 +15,6 @@ import random
 import numpy as np
 from fastapi.middleware.cors import CORSMiddleware
 
-
-def generate_random_data():
-    fake = Faker()
-
-    id = random.randint(1, 1000000)
-    name = fake.first_name()
-    lastname = fake.last_name()
-    height = np.round(random.uniform(140, 220), 2)  # assuming height is in meters
-    weight = np.round(random.uniform(50, 100), 2)   # assuming weight is in kilos
-   
-    return {"id": id, "name": name, "lastname": lastname, "height": height, "weight": weight}
-
-
 dotenv.load_dotenv()
 
 OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
@@ -46,6 +33,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def generate_random_data():
+    fake = Faker()
+
+    id = random.randint(1, 1000000)
+    name = fake.first_name()
+    lastname = fake.last_name()
+    height = np.round(random.uniform(140, 220), 2)  # assuming height is in meters
+    weight = np.round(random.uniform(50, 100), 2)   # assuming weight is in kilos
+   
+    return {"id": id, "name": name, "lastname": lastname, "height": height, "weight": weight}
 
 @app.get("/helloworld")
 async def helloworld():

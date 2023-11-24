@@ -29,24 +29,6 @@ def root():
         "message" : "hello world"
     }
     return JSONResponse(content=result, status_code=200)
-
-# @app.get("/usage") #not complete
-# def get_key_usage():
-#     today_date = datetime.today().strftime('%Y-%m-%d')
-#     module.get_plan_data_by_name()
-#     response = client.get_usage(
-#         usagePlanId='demo',
-#         keyId='demo',
-#         startDate=today_date,
-#         endDate=today_date
-#     )
-#     usage = response['items']['demo'][-1]
-#     result = {
-#         "usage" : usage[0],
-#         "remain" : usage[1]
-#     }
-
-#     return JSONResponse(content=result, status_code=200)
     
 @app.get("/plan")
 def get_plan():

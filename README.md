@@ -3,11 +3,18 @@ This resource serves as a comprehensive compilation of backend used for creating
 
 ## Repo
 
-[Openai-langchain-basic-RAG](https://github.com/vultureprime/ai-web-backend/tree/main/Openai-langchain-basic-RAG)
+[RAG-openai-langchain](https://github.com/vultureprime/ai-web-backend/tree/main/RAG-openai-langchain)
 
 [Text-to-sql-openai-athena](https://github.com/vultureprime/ai-web-backend/tree/main/Text-to-sql-openai-athena)
 
 [Text-to-sql-openai-postgresSQL](https://github.com/vultureprime/ai-web-backend/tree/main/Text-to-sql-openai-postgresSQL)
+
+[Ratelimit-with-api-key](https://github.com/vultureprime/ai-web-backend/tree/main/Ratelimit-with-api-key)
+
+[Guardrail-openai](https://github.com/vultureprime/ai-web-backend/tree/main/Guardrail-openai)
+
+[Agents-openai-langchain](https://github.com/vultureprime/ai-web-backend/tree/main/Agents-openai-langchain)
+
 ## License
 
 MIT
@@ -17,5 +24,11 @@ MIT
 VulturePrime
 
 ## Update
+
+0.0.2 
+- Update Tutorial Agents-openai-langchain
+- Update Tutorial Guardrail-openai
+- Update Tutorial Ratelimit-with-api-key
+
 0.0.1
 - Move example project from [Github deploy-ai-model](https://github.com/vultureprime/deploy-ai-model)

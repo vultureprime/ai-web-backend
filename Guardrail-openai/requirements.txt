@@ -1,0 +1,4 @@
+fastapi==0.104.1
+langchain==0.0.327
+openai==0.28.1
+pydantic==2.4.2

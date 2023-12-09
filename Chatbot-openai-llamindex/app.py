@@ -159,5 +159,5 @@ def chatWithoutRAG(query : str = 'What were some of the biggest risk factors in 
     answer = agent.chat(query)
 
     return JSONResponse({
-        'answer': answer
+        'answer': str(answer)
     })

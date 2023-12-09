@@ -1,20 +1,10 @@
 import boto3
-import csv
 
 client = boto3.client(
     'apigateway',
     region_name = 'ap-southeast-1')
-
-
-# def save_data(api_key_information):
-#     fieldnames = api_key_information[0].keys()
-#     print(fieldnames)
-#     with open('db.csv', 'w',newline='') as db:
-#         csv_writer = csv.DictWriter(db, fieldnames=fieldnames)
-#         csv_writer.writeheader()
-#         csv_writer.writerows(api_key_information)
         
-def get_plan_data_by_name(plan_name):
+def get_plan_data_by_name(plan_name : str) -> str:
     try:
         res = client.get_usage_plans()
         for i in res['items']:
@@ -25,7 +15,7 @@ def get_plan_data_by_name(plan_name):
     except Exception as e:
         print(e)
         
-def add_key_to_plan(api_key_id,plan_name):
+def add_key_to_plan(api_key_id : str, plan_name : str):
     plan_id = get_plan_data_by_name(plan_name)['id']
     response = client.create_usage_plan_key(
         usagePlanId=plan_id,
@@ -34,7 +24,7 @@ def add_key_to_plan(api_key_id,plan_name):
     )
     return response
     
-def check_user_exist_in_plan(user,plan_name):
+def check_user_exist_in_plan(user : str, plan_name : str) -> bool:
     try:
         res = get_plan_data_by_name(plan_name)
         plan_id = res['id']

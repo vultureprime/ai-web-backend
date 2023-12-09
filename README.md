@@ -1,4 +1,4 @@
-## AI Web Interface
+## AI Web Backend
 This resource serves as a comprehensive compilation of backend used for creating AI-powered websites. 
 
 ## Repo

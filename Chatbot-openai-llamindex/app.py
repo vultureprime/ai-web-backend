@@ -141,7 +141,7 @@ def chat(query : str = 'What were some of the biggest risk factors in 2022 for U
     answer = agent.chat(query)
 
     return JSONResponse({
-        'answer': answer
+        'answer': str(answer)
     })
 
 @app.post('/resetChat')

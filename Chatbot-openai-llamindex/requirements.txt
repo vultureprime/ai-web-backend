@@ -1,0 +1,4 @@
+unstructured
+llama-hub
+llama_index
+python-dotenv

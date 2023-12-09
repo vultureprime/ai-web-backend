@@ -1,4 +1,4 @@
 unstructured
 llama-hub
-llama_index
+llama-index
 python-dotenv

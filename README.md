@@ -1,4 +1,4 @@
-## AI Web Interface
+## AI Web Backend
 This resource serves as a comprehensive compilation of backend used for creating AI-powered websites. 
 
 ## Repo
@@ -15,6 +15,8 @@ This resource serves as a comprehensive compilation of backend used for creating
 
 [Agents-openai-langchain](https://github.com/vultureprime/ai-web-backend/tree/main/Agents-openai-langchain)
 
+[Chatbot-openai-llamindex](https://github.com/vultureprime/ai-web-backend/tree/main/Chatbot-openai-llamindex)
+
 ## License
 
 MIT
@@ -24,6 +26,9 @@ MIT
 VulturePrime
 
 ## Update
+
+0.0.3
+- Update Tutorial Chatbot-openai-llamindex
 
 0.0.2 
 - Update Tutorial Agents-openai-langchain

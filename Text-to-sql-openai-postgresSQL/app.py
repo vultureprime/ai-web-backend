@@ -4,9 +4,10 @@ from fastapi import FastAPI
 from sqlalchemy import text, Table, Column, Integer, String, MetaData, Float
 from sqlalchemy.engine import create_engine
 from sqlalchemy.sql import insert
-from llama_index import SQLDatabase,ServiceContext
-from llama_index.indices.struct_store import NLSQLTableQueryEngine
-from llama_index.llms import OpenAI
+from llama_index.core.utilities.sql_wrapper import SQLDatabase
+# from llama_index import ServiceContext
+from llama_index.core.query_engine import NLSQLTableQueryEngine
+from llama_index.llms.openai import OpenAI
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import sessionmaker
@@ -14,14 +15,16 @@ from faker import Faker
 import random
 import numpy as np
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+class QueryRequest(BaseModel):
+    query_str: str
 
 dotenv.load_dotenv()
 
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-HOST = os.environ['HOST']
-DBPASSWORD = os.environ['DBPASSWORD']
-DBUSER = os.environ['DBUSER']
-DBNAME = os.environ['DBNAME']
+HOST = 'localhost'
+DBPASSWORD = 'password'
+DBUSER = 'postgres'
+DBNAME = 'postgres'
 
 app = FastAPI()
 
@@ -162,8 +165,8 @@ async def addRandomData():
     json_compatible_item_data = jsonable_encoder(data)
     return JSONResponse(content=json_compatible_item_data)
 
-@app.get("/getAllData")
-async def getAllData():
+@app.get("/getAllData/")
+async def getAllData(table : str):
 
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
@@ -175,26 +178,54 @@ async def getAllData():
             database=DBNAME)
     )
     sql_database = SQLDatabase(engine)
-    res = sql_database.run_sql("SELECT * FROM students")
+    res = sql_database.run_sql(f"SELECT * FROM {table}")
+    print(res[1])
+    result = []
+    # for i in res[1]['result'] : 
+    #     result.append({
+    #         'id' : i[0],
+    #         'name' : i[1],
+    #         'lastname' : i[2],
+    #         'height' : i[3],
+    #         'weight' : i[4]
+    #     })
+    json_compatible_item_data = jsonable_encoder(res[1])
+    return JSONResponse(content=json_compatible_item_data)
 
-    result = {}
-    for i in res[1]['result'] : 
-        result[i[0]] = {
-            'id' : i[0],
-            'name' : i[1],
-            'lastname' : i[2],
-            'height' : i[3],
-            'weight' : i[4]
-        }
-    json_compatible_item_data = jsonable_encoder(result)
+@app.get("/get_all_table/")
+async def getAllData():
+    
+    conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
+    engine = create_engine(
+        conn_str.format(
+            user = DBUSER,
+            host = HOST,
+            port = '5432',
+            password = DBPASSWORD,
+            database=DBNAME)
+    )
+    sql_database = SQLDatabase(engine)
+    res = sql_database.run_sql("""
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+AND table_type = 'BASE TABLE'
+                               """)
+    print(res[1])
+    result = []
+    # for i in res[1]['result'] : 
+    #     result.append({
+    #         'id' : i[0],
+    #         'name' : i[1],
+    #         'lastname' : i[2],
+    #         'height' : i[3],
+    #         'weight' : i[4]
+    #     })
+    json_compatible_item_data = jsonable_encoder(res[1])
     return JSONResponse(content=json_compatible_item_data)
 
 
-
-@app.get("/queryWithPrompt")
-async def queryWithPrompt(query_str : str = 'Write SQL in PostgresSQL format. Get average hight of student.'):
-
-    llm = OpenAI(model="gpt-4",temperature=0, max_tokens=256)
+def query_databae(q_string):
 
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
@@ -205,34 +236,125 @@ async def queryWithPrompt(query_str : str = 'Write SQL in PostgresSQL format. Ge
             password = DBPASSWORD,
             database=DBNAME)
     )
-    service_context = ServiceContext.from_defaults(
-        llm=llm
-    )
     sql_database = SQLDatabase(engine)
+    res = sql_database.run_sql(f"{q_string}")
+    return res[1]
 
-    query_engine = NLSQLTableQueryEngine(
-        sql_database=sql_database,
-        service_context=service_context
-    )
+# @app.get("/queryWithPrompt")
+# async def queryWithPrompt(query_str : str = 'Write SQL in PostgresSQL format. ใช้เฉพาะข้อมูลที่มีอยู่ใน Database เท่านั้น. คำถาม คือ เคยเป็นกุ้งหรือไม่'):
 
-    query_prompt = (query_str)
-    try : 
-        response = query_engine.query(query_prompt)
+#     llm = OpenAI(model="gpt-4o-mini",temperature=0, max_tokens=1000)
 
+#     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
+#     engine = create_engine(
+#         conn_str.format(
+#             user = DBUSER,
+#             host = HOST,
+#             port = '5432',
+#             password = DBPASSWORD,
+#             database=DBNAME)
+#     )
+#     # service_context = ServiceContext.from_defaults(
+#     #     llm=llm
+#     # )
+#     sql_database = SQLDatabase(engine)
+
+#     query_engine = NLSQLTableQueryEngine(
+#         sql_database=sql_database,
+#         llm=llm,
+#         sql_only=True
+        
+        
+#     )
+
+#     query_prompt = (query_str)
+#     try : 
+#         response = query_engine.query(query_prompt)
+#         print(response)
+#         # result = response.response
+#         # sql_query = response.metadata['sql_query'],
+#         # query_result = query_databae(response.metadata['sql_query'])
+#         result = {
+#             "result": response.response,
+#             "sql_query": response.metadata['sql_query'],
+#             "query_result":query_databae(response.metadata['sql_query'])
+#         }
+#         json_compatible_item_data = jsonable_encoder(result)
+#         return JSONResponse(content=json_compatible_item_data)
+
+
+#     except :
+#         result = {
+#             "result": 'Bad Prompt',
+#             "sql_query": None
+#         }
+        
+#         json_compatible_item_data = jsonable_encoder(result)
+#         return JSONResponse(content=json_compatible_item_data)
+
+
+@app.post("/queryWithPrompt")
+async def queryWithPrompt(request: QueryRequest):
+    query_str = request.query_str
+    try:
+        llm = OpenAI(model="gpt-4o-mini", temperature=0, max_tokens=1000)
+        
+        conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
+        engine = create_engine(
+            conn_str.format(
+                user=DBUSER,
+                host=HOST,
+                port='5432',
+                password=DBPASSWORD,
+                database=DBNAME
+            )
+        )        
+        # ปรับ query string ให้จำกัดขอบเขตการตอบ
+        restricted_query = f"""
+You are a PostgreSQL query generator. You MUST follow these rules strictly:
+
+STRICT RULES:
+1. Do NOT attempt to answer questions outside database
+2. Do NOT make assumptions about data 
+3. Do NOT provide general information or explanations
+
+Question: {query_str}
+
+Generate ONLY a PostgreSQL query , otherwise return the error message'
+
+"""
+        
+        sql_database = SQLDatabase(engine)
+        
+        query_engine = NLSQLTableQueryEngine(
+            sql_database=sql_database,
+            llm=llm,
+            sql_only=True
+        )
+        
+        response = query_engine.query(restricted_query)
+        
+        # ตรวจสอบว่าคำตอบเป็น error message หรือไม่
+        if "Cannot answer" in response.response:
+            result = {
+                "result": response.response,
+                "sql_query": None,
+                "query_result": None
+            }
+        else:
+            result = {
+                "result": response.response,
+                "sql_query": response.metadata['sql_query'],
+                "query_result": query_databae(response.metadata['sql_query'])
+            }
+        
+        return JSONResponse(content=jsonable_encoder(result))
+        
+    except Exception as e:
         result = {
-            "result": response.response,
-            "SQL Query": response.metadata['sql_query']
+            "result": 'Bad Prompt or Error',
+            "sql_query": None,
+            "error": str(e)
         }
         
-        json_compatible_item_data = jsonable_encoder(result)
-        return JSONResponse(content=json_compatible_item_data)
-
-
-    except :
-        result = {
-            "result": 'Bad Prompt',
-            "SQL Query": 'Null'
-        }
-        
-        json_compatible_item_data = jsonable_encoder(result)
-        return JSONResponse(content=json_compatible_item_data)
+        return JSONResponse(content=jsonable_encoder(result))

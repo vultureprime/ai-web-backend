@@ -25,6 +25,7 @@ HOST = 'localhost'
 DBPASSWORD = 'password'
 DBUSER = 'postgres'
 DBNAME = 'postgres'
+DB_PORT = '15438'
 
 app = FastAPI()
 
@@ -59,7 +60,7 @@ async def createTable():
         conn_str.format(
             user = DBUSER,
             host = HOST,
-            port = '5432',
+            port = DB_PORT,
             password = DBPASSWORD,
             database = DBNAME)
     )
@@ -87,7 +88,7 @@ async def removeTable():
         conn_str.format(
             user = DBUSER,
             host = HOST,
-            port = '5432',
+            port = DB_PORT,
             password = DBPASSWORD,
             database = DBNAME)
     )
@@ -110,7 +111,7 @@ async def getInfo():
         conn_str.format(
             user = DBUSER,
             host = HOST,
-            port = '5432',
+            port = DB_PORT,
             password = DBPASSWORD,
             database = DBNAME)
     )
@@ -145,7 +146,7 @@ async def addRandomData():
         conn_str.format(
             user = DBUSER,
             host = HOST,
-            port = '5432',
+            port = DB_PORT,
             password = DBPASSWORD,
             database = DBNAME)
     )
@@ -173,7 +174,7 @@ async def getAllData(table : str):
         conn_str.format(
             user = DBUSER,
             host = HOST,
-            port = '5432',
+            port = DB_PORT,
             password = DBPASSWORD,
             database=DBNAME)
     )
@@ -200,7 +201,7 @@ async def getAllData():
         conn_str.format(
             user = DBUSER,
             host = HOST,
-            port = '5432',
+            port = DB_PORT,
             password = DBPASSWORD,
             database=DBNAME)
     )
@@ -232,7 +233,7 @@ def query_databae(q_string):
         conn_str.format(
             user = DBUSER,
             host = HOST,
-            port = '5432',
+            port = DB_PORT,
             password = DBPASSWORD,
             database=DBNAME)
     )
@@ -250,7 +251,7 @@ def query_databae(q_string):
 #         conn_str.format(
 #             user = DBUSER,
 #             host = HOST,
-#             port = '5432',
+#             port = DB_PORT,
 #             password = DBPASSWORD,
 #             database=DBNAME)
 #     )
@@ -304,7 +305,7 @@ async def queryWithPrompt(request: QueryRequest):
             conn_str.format(
                 user=DBUSER,
                 host=HOST,
-                port='5432',
+                port=DB_PORT,
                 password=DBPASSWORD,
                 database=DBNAME
             )

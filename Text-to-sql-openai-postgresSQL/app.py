@@ -359,6 +359,13 @@ Please generate SQL query with these requirements:
     5. Use clear and descriptive names for any calculated fields
     6. Make sure column references explicitly include their full table names
 
+Column descriptions:
+
+workingstatus: คือสถานะการทำงาน มี Working | LayOff | Resign
+income: คือ รายได้
+incomecode: คือ รหัสของประเภทรายได้
+incomename คือ ชื่อของประเภทรายได้ 
+
 Question: {query_str}
 
 Tip:

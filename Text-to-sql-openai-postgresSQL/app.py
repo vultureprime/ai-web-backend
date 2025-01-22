@@ -369,7 +369,8 @@ incomename คือ ชื่อของประเภทรายได้
 Question: {query_str}
 
 Tip:
-1.PostgreSQL has AGE() function for time differences
+1. PostgreSQL has AGE() function for time differences
+2. Don't use WHERE MAX statements because it get the error and invalid postgrest syntax
 
 Generate ONLY a PostgreSQL query , otherwise return the error message and explain why got the error
 

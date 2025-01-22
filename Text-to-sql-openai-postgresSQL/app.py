@@ -385,7 +385,7 @@ Generate ONLY a PostgreSQL query , otherwise return the error message and explai
         )
 
         response = query_engine.query(restricted_query)
-
+        print(response)
         # ตรวจสอบว่าคำตอบเป็น error message หรือไม่
         if "Cannot answer" in response.response:
             result = {

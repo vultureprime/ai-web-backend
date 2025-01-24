@@ -1,6 +1,6 @@
 import os
 import dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from sqlalchemy import text, Table, Column, Integer, String, MetaData, Float
 from sqlalchemy.engine import create_engine
 from sqlalchemy.sql import insert
@@ -16,6 +16,7 @@ import random
 import numpy as np
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
 class QueryRequest(BaseModel):
     query_str: str
 
@@ -166,32 +167,45 @@ async def addRandomData():
     json_compatible_item_data = jsonable_encoder(data)
     return JSONResponse(content=json_compatible_item_data)
 
-@app.get("/getAllData/")
-async def getAllData(table : str):
-
+def get_database_connection():
+    """Create and return a database connection."""
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
         conn_str.format(
-            user = DBUSER,
-            host = HOST,
-            port = DB_PORT,
-            password = DBPASSWORD,
-            database=DBNAME)
+            user=DBUSER,
+            host=HOST,
+            port=DB_PORT,
+            password=DBPASSWORD,
+            database=DBNAME
+        )
     )
-    sql_database = SQLDatabase(engine)
-    res = sql_database.run_sql(f"SELECT * FROM {table}")
-    print(res[1])
-    result = []
-    # for i in res[1]['result'] :
-    #     result.append({
-    #         'id' : i[0],
-    #         'name' : i[1],
-    #         'lastname' : i[2],
-    #         'height' : i[3],
-    #         'weight' : i[4]
-    #     })
-    json_compatible_item_data = jsonable_encoder(res[1])
-    return JSONResponse(content=json_compatible_item_data)
+    return SQLDatabase(engine)
+
+@app.get("/getAllData/{table}")
+async def get_all_data(table: str):
+    """Retrieve all data from the specified table."""
+    try:
+        # Basic SQL injection prevention
+        allowed_tables = ['your_table1', 'your_table2']  # Add your actual table names
+        if table not in allowed_tables:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Access to table '{table}' is not allowed"
+            )
+        
+        sql_database = get_database_connection()
+        query_result = sql_database.run_sql(f"SELECT * FROM {table}")
+        
+        if not query_result or len(query_result) < 2:
+            return JSONResponse(content={"message": "No data found"})
+        
+        return JSONResponse(content=jsonable_encoder(query_result[1]))
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Database error: {str(e)}"
+        )
 
 @app.get("/get_all_table/")
 async def getAllData():

@@ -19,13 +19,13 @@ from pydantic import BaseModel
 
 class QueryRequest(BaseModel):
     query_str: str
-
+    database: str = "student"
 dotenv.load_dotenv()
 
 HOST = 'localhost'
 DBPASSWORD = 'password'
 DBUSER = 'postgres'
-DBNAME = 'postgres'
+DBNAME = 'student'
 DB_PORT = '15438'
 
 app = FastAPI()
@@ -167,8 +167,9 @@ async def addRandomData():
     json_compatible_item_data = jsonable_encoder(data)
     return JSONResponse(content=json_compatible_item_data)
 
-def get_database_connection():
+def get_database_connection(database):
     """Create and return a database connection."""
+    DBNAME = database
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
         conn_str.format(
@@ -181,19 +182,12 @@ def get_database_connection():
     )
     return SQLDatabase(engine)
 
-@app.get("/getAllData/{table}")
-async def get_all_data(table: str):
+@app.get("/getAllData/")
+async def get_all_data(table: str, database: str = "student"):
     """Retrieve all data from the specified table."""
     try:
         # Basic SQL injection prevention
-        allowed_tables = ['your_table1', 'your_table2']  # Add your actual table names
-        if table not in allowed_tables:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Access to table '{table}' is not allowed"
-            )
-        
-        sql_database = get_database_connection()
+        sql_database = get_database_connection(database)
         query_result = sql_database.run_sql(f"SELECT * FROM {table}")
         
         if not query_result or len(query_result) < 2:
@@ -208,8 +202,8 @@ async def get_all_data(table: str):
         )
 
 @app.get("/get_all_table/")
-async def getAllData():
-
+async def getAllData(database: str = "student"):
+    DBNAME = database
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
         conn_str.format(
@@ -311,6 +305,7 @@ def query_databae(q_string):
 @app.post("/queryWithPrompt")
 async def queryWithPrompt(request: QueryRequest):
     query_str = request.query_str
+    DBNAME = request.database
     try:
         llm = OpenAI(model="gpt-4o-mini", temperature=0, max_tokens=1000)
 

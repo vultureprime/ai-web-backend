@@ -1,5 +1,5 @@
 import os
-import dotenv
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from sqlalchemy import text, Table, Column, Integer, String, MetaData, Float
 from sqlalchemy.engine import create_engine
@@ -20,13 +20,18 @@ from pydantic import BaseModel
 class QueryRequest(BaseModel):
     query_str: str
     database: str = "student"
-dotenv.load_dotenv()
 
-HOST = 'localhost'
-DBPASSWORD = 'password'
-DBUSER = 'postgres'
-DBNAME = 'student'
-DB_PORT = '15438'
+
+# รับค่า environment variables
+DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_PORT = os.getenv('DB_PORT', '15438')
+DB_NAME = os.getenv('DB_NAME')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+if not all([DB_NAME, DB_USER, DB_PASSWORD, OPENAI_API_KEY]):
+    raise ValueError("กรุณาตั้งค่า environment variables ให้ครบถ้วน")
 
 app = FastAPI()
 
@@ -59,11 +64,11 @@ async def createTable():
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
         conn_str.format(
-            user = DBUSER,
-            host = HOST,
+            user = DB_USER,
+            host = DB_HOST,
             port = DB_PORT,
-            password = DBPASSWORD,
-            database = DBNAME)
+            password = DB_PASSWORD,
+            database = DB_NAME)
     )
     meta = MetaData()
 
@@ -87,11 +92,11 @@ async def removeTable():
 
     engine = create_engine(
         conn_str.format(
-            user = DBUSER,
-            host = HOST,
+            user = DB_USER,
+            host = DB_HOST,
             port = DB_PORT,
-            password = DBPASSWORD,
-            database = DBNAME)
+            password = DB_PASSWORD,
+            database = DB_NAME)
     )
     Session = sessionmaker(bind=engine)
 
@@ -110,11 +115,11 @@ async def getInfo():
 
     engine = create_engine(
         conn_str.format(
-            user = DBUSER,
-            host = HOST,
+            user = DB_USER,
+            host = DB_HOST,
             port = DB_PORT,
-            password = DBPASSWORD,
-            database = DBNAME)
+            password = DB_PASSWORD,
+            database = DB_NAME)
     )
 
     metadata = MetaData()
@@ -145,11 +150,11 @@ async def addRandomData():
 
     engine = create_engine(
         conn_str.format(
-            user = DBUSER,
-            host = HOST,
+            user = DB_USER,
+            host = DB_HOST,
             port = DB_PORT,
-            password = DBPASSWORD,
-            database = DBNAME)
+            password = DB_PASSWORD,
+            database = DB_NAME)
     )
     metadata = MetaData()
     metadata.reflect(bind=engine)
@@ -173,10 +178,10 @@ def get_database_connection(database):
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
         conn_str.format(
-            user=DBUSER,
-            host=HOST,
+            user=DB_USER,
+            host=DB_HOST,
             port=DB_PORT,
-            password=DBPASSWORD,
+            password=DB_PASSWORD,
             database=DBNAME
         )
     )
@@ -207,10 +212,10 @@ async def getAllData(database: str = "student"):
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
         conn_str.format(
-            user = DBUSER,
-            host = HOST,
+            user = DB_USER,
+            host = DB_HOST,
             port = DB_PORT,
-            password = DBPASSWORD,
+            password = DB_PASSWORD,
             database=DBNAME)
     )
     sql_database = SQLDatabase(engine)
@@ -239,11 +244,11 @@ def query_databae(q_string):
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
         conn_str.format(
-            user = DBUSER,
-            host = HOST,
+            user = DB_USER,
+            host = DB_HOST,
             port = DB_PORT,
-            password = DBPASSWORD,
-            database=DBNAME)
+            password = DB_PASSWORD,
+            database=DB_NAME)
     )
     sql_database = SQLDatabase(engine)
     res = sql_database.run_sql(f"{q_string}")
@@ -257,11 +262,11 @@ def query_databae(q_string):
 #     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
 #     engine = create_engine(
 #         conn_str.format(
-#             user = DBUSER,
-#             host = HOST,
+#             user = DB_USER,
+#             host = DB_HOST,
 #             port = DB_PORT,
-#             password = DBPASSWORD,
-#             database=DBNAME)
+#             password = DB_PASSWORD,
+#             database=DB_NAME)
 #     )
 #     # service_context = ServiceContext.from_defaults(
 #     #     llm=llm
@@ -312,10 +317,10 @@ async def queryWithPrompt(request: QueryRequest):
         conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
         engine = create_engine(
             conn_str.format(
-                user=DBUSER,
-                host=HOST,
+                user=DB_USER,
+                host=DB_HOST,
                 port=DB_PORT,
-                password=DBPASSWORD,
+                password=DB_PASSWORD,
                 database=DBNAME
             )
         )

@@ -239,7 +239,8 @@ AND table_type = 'BASE TABLE'
     return JSONResponse(content=json_compatible_item_data)
 
 
-def query_databae(q_string):
+def query_databae(q_string,database):
+    DB_NAME = database
     print(q_string)
     conn_str = "postgresql://{user}:{password}@{host}:{port}/{database}"
     engine = create_engine(
@@ -411,7 +412,7 @@ Generate ONLY a PostgreSQL query , otherwise return the error message and explai
             result = {
                 "result": response.response,
                 "sql_query": response.metadata['sql_query'],
-                "query_result": query_databae(response.metadata['sql_query'])
+                "query_result": query_databae(response.metadata['sql_query'],DBNAME)
             }
 
         return JSONResponse(content=jsonable_encoder(result))
